@@ -10,10 +10,6 @@ I think we have multiple options for deployment of our **DEV** environment (cons
 
 ### (Option 1) Deploy the containerized voting application on DEV VMs (EC2 instances):
 
-
-![Architecture Diagram for ontainerized voting application on EC2 instances ](./images/ewc-challenge.drawio.png)
-
-
 Using this approach we can leverage a cloud ( AWS ) in the most simplest way to spin up a DEV environment. This approach ensures a scalable and consistent development environment using AWS EC2 instances and Docker containers. It mirrors the production environment closely, facilitating smooth transitions from development to production:
 
 > **Note**: It is best that the following resources are provisioned in AWS using **Infrastructure-as-code** where we can leverage **Terraform or AWS cloudformation** , making it reproducable and manageable.
@@ -75,6 +71,9 @@ One thing I forgot to mention is how to handle service updates, docker images an
 This process can also be updated by setting up a CI / CD Pipeline for this (e.g. Gitlab CI / CD or Github Actions) to automate the build, push, and deployment process.
 
 By taking care we can make sure that our services are always up to date with the latest code and docker images, and the deployment process is streamlined and automated.
+
+
+![Architecture Diagram for ontainerized voting application on EC2 instances ](./images/ewc-challenge.drawio.png)
 
 
 ## TODO:
