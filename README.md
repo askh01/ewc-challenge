@@ -73,7 +73,7 @@ This process can also be updated by setting up a CI / CD Pipeline for this (e.g.
 By taking care we can make sure that our services are always up to date with the latest code and docker images, and the deployment process is streamlined and automated.
 
 
-![Architecture Diagram for ontainerized voting application on EC2 instances ](images/ewc-challenge-drawio.png)
+![Architecture Diagram for ontainerized voting application on EC2 instances ](./images/ewc-challenge.drawio.png)
 
 
 ## TODO:
