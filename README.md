@@ -4,7 +4,16 @@
 
 ### Discuss & Justify Potential Deployment Options in Terms of Infrastructure for Development Environment:
 
-Deployment Options in terms if infrastructure for Development Environment:
+Application Overview:
+The example voting app consists of multiple components:
+
++ Voting App: A front-end application that allows users to vote.
++ Result App: A front-end application that displays the voting results.
++ Worker: A background service that processes votes.
++ Redis: A key-value store used by the voting app and worker.
++ PostgreSQL: A relational database used by the result app to store voting results
+
+### Deployment Options in terms if infrastructure for Development Environment:
 
 I think we have multiple options for deployment of our **DEV** environment (consider AWS as our preferred cloud): 
 
@@ -72,51 +81,41 @@ This process can also be updated by setting up a CI / CD Pipeline for this (e.g.
 
 By taking care we can make sure that our services are always up to date with the latest code and docker images, and the deployment process is streamlined and automated.
 
+#### Autoscaling Groups:
+
+We can use Auto Scaling Groups, to enhance the approach mentioned above, in order to manage a group of EC2 instances and automatically scale the number of instances based on demand / load.
+
+For this purpose we would need to setup two Auto scaling groups:
+
++ **Frontend Auto scaling group:** Hosts multiple EC2 instances running the voting and result applications.
++ **Backend Auto scaling group:** Hosts multiple EC2 instances running the worker and Redis services.
+
+
 Please find below the Architecture diagram of the DEV infra deployment approach discussed above:
 
 ![Architecture Diagram for ontainerized voting application on EC2 instances ](./images/ewc-challenge.drawio.png)
 
 
+
+### (Option 2) Deploy the voting application DEV environment using AWS Elastic Container Service:
+
+For this approach: 
++ Create an ECS Cluster that includes the EC2 instances. 
++ The EC2 instances will be launched independently and will join the ECS cluster and run the container tasks. 
++ Define ECS task definitions for each component of the application (Voting App, Result App, Worker, Redis, PostgreSQL).
+
+Deploying an application using AWS ECS with EC2, for development environment, offers several advantages over simply running Docker containers on plain EC2 instances. Some key advantages are:
+
++ Management and Orchestration:
+    + AWS ECS provides a managed service that takes care of container orchestration and automatically handles container placement, scaling and scheduling where is using Option 1 requires to manage these tasks manually
+    + ECS ensures to automatically restart failed containers and deploying any additional instances based on load of the application.
++ Automated scaling
+    + ECS supports automatic scaling of both the container instances and the services running on those instances
+    + ECS automatically places container tasks on the best fit instances according to our specified requirements
++  Environment separation:
+    + ECS makes it easier to manage multiple environments (development, staging, production) by logically grouping and isolating our services and resources. This is more challenging to implement and maintain in option 1
++ Monitoring and logging
+    + In option 1 we have to install and manage the monitoring and logging tools manually. However ECS can be integrated easily with services like AWS Cloudwatch which automatically collects and aggregrates logs and metrics.
+
 ## TODO:
-
-+ Create Diagram
-+ Write about other deployment options.
-+ Write IaC code. 
-### AWS Elastic Beanstalk:
-
-Pros:
-+ Manages the infrastructure, freeing developers to focus on application code.
-+ Provides easy scaling and management of environments.
-+ Supports multiple languages and frameworks.
-
-Cons:
-
-+ Abstracts away some control over infrastructure.
-+ Might be overkill for simple applications.
-+ AWS ECS (Elastic Container Service) with Fargate:
-
-Pros:
-
-+ No need to manage EC2 instances; Fargate handles the compute.
-+ Integrates well with other AWS services (RDS, S3, etc.).
-+ Scalable and flexible container orchestration.
-
-Cons:
-
-+ Can be more complex to set up compared to Elastic Beanstalk.
-+ Requires understanding of ECS and Fargate pricing.
-
-### AWS EKS (Elastic Kubernetes Service):
-
-Pros:
-
-+ Provides maximum flexibility and control.
-+ Ideal for complex, microservices-based applications.
-+ Kubernetes expertise is transferable across clouds and on-premises.
-
-Cons:
-+ High complexity and operational overhead.
-+ Steeper learning curve for teams not familiar with Kubernetes.
-
-#### Recommended Approach:
-For a development environment, using AWS ECS with Fargate is recommended due to its balance between control, ease of use, and scalability. It simplifies the deployment process by abstracting away the underlying infrastructure management while providing sufficient flexibility and integration with other AWS services.
++ Write IaC and CI CD code. 
