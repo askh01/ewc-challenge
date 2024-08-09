@@ -117,5 +117,15 @@ Deploying an application using AWS ECS with EC2, for development environment, of
 + Monitoring and logging
     + In option 1 we have to install and manage the monitoring and logging tools manually. However ECS can be integrated easily with services like AWS Cloudwatch which automatically collects and aggregrates logs and metrics.
 
+### (Option 3) Deploy the voting application on a DEV cluster (kubernetes EKS)
+
+Since we would want to consider high availability and scalability for the voting application, spinning up a k8s dev cluster is also a very good option.
+
++ EKS provides the same Kubernetes environment in both development and production, ensuring consistency. This means that what works in development is highly likely to work in production without unexpected issues.
++ EKS allows you to easily scale your Kubernetes cluster up or down based on our development needs.
++ k8s supports rolling updates and quick rollbacks, making it easy to test new code versions in a development environment with minimal downtime and risk.
++ We can also leverage Helm, write helm charts for templating all our k8s deployments / resources. We can easily separate and manage dev and prod environments by creating two different values files for dev and prod. 
+
+
 ## TODO:
 + Write IaC and CI CD code. 
