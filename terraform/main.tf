@@ -82,12 +82,19 @@ resource "aws_security_group" "main" {
   }
 }
 
+resource "aws_key_pair" "aws_frontend_ec2_keypair" {
+  key_name   = "aws_frontend_ec2_keypair"
+  public_key = file("/ssh_keys/aws_frontend_ec2_keypair.pub")
+}
+
 # Create the EC2 instance
 resource "aws_instance" "web" {
   ami                    = "ami-00060fac2f8c42d30" # Amazon Linux 2 AMI for eu-central-1 region
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.main.id]
+  key_name               = aws_key_pair.aws_frontend_ec2_keypair
+
 
   tags = {
     Name = "WebServerInstance"
