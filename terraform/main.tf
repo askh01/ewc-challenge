@@ -21,7 +21,7 @@ resource "aws_subnet" "public_subnet" {
 
 
   tags = {
-    Name = "main-subnet"
+    Name = "public_subnet"
   }
 }
 
@@ -55,7 +55,7 @@ resource "aws_route_table_association" "main" {
 }
 
 # Create a Security Group that allows SSH and HTTP access
-resource "aws_security_group" "main" {
+resource "aws_security_group" "frontend-ec2" {
   vpc_id = aws_vpc.main.id
 
   ingress {
@@ -72,6 +72,20 @@ resource "aws_security_group" "main" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 5000
+    to_port     = 5000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5001
+    to_port     = 5001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -80,7 +94,7 @@ resource "aws_security_group" "main" {
   }
 
   tags = {
-    Name = "main-sg"
+    Name = "frontend-ec2-sg"
   }
 }
 
@@ -91,12 +105,29 @@ resource "aws_key_pair" "aws_frontend_ec2_keypair" {
 
 # Create the EC2 instance
 resource "aws_instance" "web" {
-  ami                    = "ami-00060fac2f8c42d30" # Amazon Linux 2 AMI for eu-central-1 region
+  ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_subnet.id
-  vpc_security_group_ids = [aws_security_group.main.id]
+  vpc_security_group_ids = [aws_security_group.frontend-ec2.id]
   key_name               = "aws_frontend_ec2_keypair"
 
+  user_data = <<-EOF
+              #!/bin/bash
+              # Update the package index
+              sudo yum update -y
+
+              # Install Docker
+              sudo amazon-linux-extras install docker -y
+
+              # Start Docker service
+              sudo service docker start
+
+              # Enable Docker service to start on boot
+              sudo systemctl enable docker
+
+              # Add the ec2-user to the docker group so you can execute Docker commands without using sudo
+              sudo usermod -a -G docker ec2-user
+              EOF
 
   tags = {
     Name = "FrontendEC2"
