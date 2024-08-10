@@ -84,9 +84,9 @@ resource "aws_security_group" "main" {
 
 # Create the EC2 instance
 resource "aws_instance" "web" {
-  ami             = "ami-00060fac2f8c42d30" # Amazon Linux 2 AMI for eu-central-1 region
-  instance_type   = "t2.micro"
-  subnet_id       = aws_subnet.main.id
+  ami                    = "ami-00060fac2f8c42d30" # Amazon Linux 2 AMI for eu-central-1 region
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.main.id]
 
   tags = {
