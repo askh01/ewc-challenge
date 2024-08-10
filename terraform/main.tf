@@ -13,10 +13,12 @@ resource "aws_vpc" "main" {
 }
 
 # Create a Subnet
-resource "aws_subnet" "main" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "eu-central-1a" # Change to your preferred availability zone
+resource "aws_subnet" "public_subnet" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "eu-central-1a" # Change to your preferred availability zone
+  map_public_ip_on_launch = true            # automatically assign publlic ip to any ec2 launched in the public subnet
+
 
   tags = {
     Name = "main-subnet"
@@ -48,7 +50,7 @@ resource "aws_route_table" "main" {
 
 # Associate the Route Table with the Subnet
 resource "aws_route_table_association" "main" {
-  subnet_id      = aws_subnet.main.id
+  subnet_id      = aws_subnet.public_subnet.id
   route_table_id = aws_route_table.main.id
 }
 
@@ -84,19 +86,19 @@ resource "aws_security_group" "main" {
 
 resource "aws_key_pair" "aws_frontend_ec2_keypair" {
   key_name   = "aws_frontend_ec2_keypair"
-  public_key = file("/ssh_keys/aws_frontend_ec2_keypair.pub")
+  public_key = file("./ssh_keys/aws_frontend_ec2_keypair.pub")
 }
 
 # Create the EC2 instance
 resource "aws_instance" "web" {
   ami                    = "ami-00060fac2f8c42d30" # Amazon Linux 2 AMI for eu-central-1 region
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.main.id
+  subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.main.id]
-  key_name               = aws_key_pair.aws_frontend_ec2_keypair
+  key_name               = "aws_frontend_ec2_keypair"
 
 
   tags = {
-    Name = "WebServerInstance"
+    Name = "FrontendEC2"
   }
 }
