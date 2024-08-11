@@ -18,6 +18,11 @@ jobs:
     name: 'Terraform Plan, Apply, or Destroy'
     runs-on: ubuntu-latest
 
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-central-1
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -27,12 +32,9 @@ jobs:
       with:
         terraform_version: 1.0.0
 
-    - name: Configure AWS credentials
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Print AWS credentials
       run: |
-        echo "AWS credentials configured."
+        echo "AWS credentials printed."
         echo $AWS_ACCESS_KEY_ID
         echo $AWS_SECRET_ACCESS_KEY
   
