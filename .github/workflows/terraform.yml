@@ -29,26 +29,31 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
+      working-directory: ./terraform
 
     - name: Terraform Plan
       if: ${{ github.event.inputs.action == 'plan' }}
       run: terraform plan -out=tfplan
+      working-directory: ./terraform
 
     - name: Terraform Apply
       if: ${{ github.event.inputs.action == 'apply' }}
       run: terraform apply -auto-approve tfplan
+      working-directory: ./terraform
 
     - name: Terraform Destroy
       if: ${{ github.event.inputs.action == 'destroy' }}
       run: terraform destroy -auto-approve
+      working-directory: ./terraform
 
     - name: Upload Terraform state
       if: ${{ github.event.inputs.action == 'apply' }}
       uses: actions/upload-artifact@v2
       with:
         name: terraform-state
-        path: ./terraform.tfstate
+        path: ./terraform/terraform.tfstate
 
     - name: Clean up
       if: always()
       run: rm -rf .terraform/ terraform.tfstate tfplan
+      working-directory: ./terraform 
