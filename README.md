@@ -95,7 +95,7 @@ Please find below the Architecture diagram of the DEV infra deployment approach 
 
 ![Architecture Diagram for ontainerized voting application on EC2 instances ](./images/ewc-challenge.drawio.png)
 
-
+> **Note**: Code and Implementation for the approach mentioned above can be found in this repository. 
 
 ### (Option 2) Deploy the voting application DEV environment using AWS Elastic Container Service:
 
@@ -127,5 +127,4 @@ Since we would want to consider high availability and scalability for the voting
 + We can also leverage Helm, write helm charts for templating all our k8s deployments / resources. We can easily separate and manage dev and prod environments by creating two different values files for dev and prod. 
 
 
-## TODO:
-+ Write IaC and CI CD code. 
+> **Note**: Code and Implementation for option 1 can be found in this repository. 
