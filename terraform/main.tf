@@ -224,7 +224,7 @@ resource "aws_instance" "frontend" {
 resource "aws_instance" "backend" {
   ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.private_subnet.id
+  subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.backend_sg.id]
   key_name               = "aws_backend_ec2_keypair"
 
@@ -254,7 +254,7 @@ resource "aws_instance" "backend" {
 resource "aws_instance" "db" {
   ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
   instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.private_subnet.id
+  subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.db_sg.id]
   key_name               = "aws_db_ec2_keypair"
 
