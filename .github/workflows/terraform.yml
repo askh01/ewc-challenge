@@ -44,12 +44,12 @@ jobs:
 
     - name: Terraform Plan
       if: ${{ github.event.inputs.action == 'plan' }}
-      run: terraform plan -out=tfplan
+      run: terraform plan -out=plan.tfout
       working-directory: ./terraform
 
     - name: Terraform Apply
       if: ${{ github.event.inputs.action == 'apply' }}
-      run: terraform apply -auto-approve tfplan
+      run: terraform apply -auto-approve plan.tfout
       working-directory: ./terraform
 
     - name: Terraform Destroy
