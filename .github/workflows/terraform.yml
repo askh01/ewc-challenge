@@ -33,11 +33,9 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
         echo "AWS credentials configured."
-        echo "${{ secrets.AWS_ACCESS_KEY_ID }}"
-        echo "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-    - name: Debug Environment
-      run: env | grep AWS
-
+        echo "${{ AWS_ACCESS_KEY_ID }}"
+        echo "${{ AWS_SECRET_ACCESS_KEY }}"
+  
     - name: Terraform Init
       run: terraform init
       working-directory: ./terraform
