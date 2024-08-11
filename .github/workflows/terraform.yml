@@ -1,0 +1,54 @@
+name: Terraform Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Select action'
+        required: true
+        default: 'plan'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+jobs:
+  terraform:
+    name: 'Terraform Plan, Apply, or Destroy'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.0.0
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Plan
+      if: ${{ github.event.inputs.action == 'plan' }}
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      if: ${{ github.event.inputs.action == 'apply' }}
+      run: terraform apply -auto-approve tfplan
+
+    - name: Terraform Destroy
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      run: terraform destroy -auto-approve
+
+    - name: Upload Terraform state
+      if: ${{ github.event.inputs.action == 'apply' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: terraform-state
+        path: ./terraform.tfstate
+
+    - name: Clean up
+      if: always()
+      run: rm -rf .terraform/ terraform.tfstate tfplan
