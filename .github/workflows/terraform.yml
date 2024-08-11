@@ -37,13 +37,17 @@ jobs:
         echo "AWS credentials printed."
         echo $AWS_ACCESS_KEY_ID
         echo $AWS_SECRET_ACCESS_KEY
-  
+
+    - name: Clear Terraform Cache
+      run: rm -rf ~/.terraform.d/plugin-cache .terraform plan.tfout
+      working-directory: ./terraform
+
     - name: Terraform Init
       run: terraform init
       working-directory: ./terraform
 
     - name: Terraform Plan
-      if: ${{ github.event.inputs.action == 'plan' }}
+      if: ${{ github.event.inputs.action == 'plan' || github.event.inputs.action == 'apply' }}
       run: terraform plan -out=plan.tfout
       working-directory: ./terraform
 
@@ -58,6 +62,13 @@ jobs:
       working-directory: ./terraform
 
     - name: Upload Terraform state
+      if: ${{ github.event.inputs.action == 'apply' }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: terraform-state
+        path: ./terraform/terraform.tfstate
+
+    - name: Upload Terraform State Artifact
       if: ${{ github.event.inputs.action == 'apply' }}
       uses: actions/upload-artifact@v2
       with:
