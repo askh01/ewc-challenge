@@ -26,9 +26,9 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_subnet" "private_subnet" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = "eu-central-1a" # Change to your preferred availability zone
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "eu-central-1a" # Change to your preferred availability zone
   map_public_ip_on_launch = true            # automatically assign publlic ip to any ec2 launched in the public subnet
   tags = {
     Name = "private-subnet"
@@ -68,7 +68,7 @@ resource "aws_route_table_association" "a" {
 resource "aws_security_group" "frontend_sg" {
   vpc_id = aws_vpc.main.id
 
-# Allow SSH access (if needed)
+  # Allow SSH access (if needed)
 
   ingress {
     from_port   = 22
@@ -76,14 +76,14 @@ resource "aws_security_group" "frontend_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-# Allow HTTP access to the 'vote' service
+  # Allow HTTP access to the 'vote' service
   ingress {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-# Allow HTTP access to the 'result' service
+  # Allow HTTP access to the 'result' service
   ingress {
     from_port   = 5001
     to_port     = 5001
@@ -106,7 +106,7 @@ resource "aws_security_group" "frontend_sg" {
 resource "aws_security_group" "backend_sg" {
   vpc_id = aws_vpc.main.id
 
-# Allow SSH access (if needed)
+  # Allow SSH access (if needed)
   ingress {
     from_port   = 22
     to_port     = 22
@@ -116,18 +116,18 @@ resource "aws_security_group" "backend_sg" {
 
   # Allow frontend services to access Redis (if needed directly by the application)
   ingress {
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
-    security_groups = [aws_security_group.frontend_sg.id]  # Allowing access from frontend to Redis
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.frontend_sg.id] # Allowing access from frontend to Redis
   }
 
   # Allow communication within the backend security group
   ingress {
-    from_port   = 6379
-    to_port     = 6379
-    protocol    = "tcp"
-    self = true
+    from_port = 6379
+    to_port   = 6379
+    protocol  = "tcp"
+    self      = true
   }
 
   egress {
@@ -145,7 +145,7 @@ resource "aws_security_group" "backend_sg" {
 resource "aws_security_group" "db_sg" {
   vpc_id = aws_vpc.main.id
 
-# Allow SSH access (if needed)
+  # Allow SSH access (if needed)
   ingress {
     from_port   = 22
     to_port     = 22
@@ -155,10 +155,10 @@ resource "aws_security_group" "db_sg" {
 
   # Allow access from the backend security group (e.g., worker, redis) to the DB
   ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    security_groups = [aws_security_group.backend_sg.id]  # DB access from backend services only
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.backend_sg.id] # DB access from backend services only
   }
 
   egress {
