@@ -66,5 +66,5 @@ jobs:
 
     - name: Clean up
       if: always()
-      run: rm -rf .terraform/ terraform.tfstate tfplan
+      run: rm -rf .terraform/ terraform.tfstate plan.tfout
       working-directory: ./terraform
