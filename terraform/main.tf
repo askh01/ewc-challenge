@@ -180,8 +180,18 @@ resource "aws_key_pair" "aws_frontend_ec2_keypair" {
   public_key = file("./ssh_keys/aws_frontend_ec2_keypair.pub")
 }
 
-# Create the EC2 instance
-resource "aws_instance" "web" {
+resource "aws_key_pair" "aws_backend_ec2_keypair" {
+  key_name   = "aws_backend_ec2_keypair"
+  public_key = file("./ssh_keys/aws_backend_ec2_keypair.pub")
+}
+
+resource "aws_key_pair" "aws_db_ec2_keypair" {
+  key_name   = "aws_db_ec2_keypair"
+  public_key = file("./ssh_keys/aws_db_ec2_keypair.pub")
+}
+
+# Create the EC2 instance for frontend services
+resource "aws_instance" "frontend" {
   ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.public_subnet.id
@@ -207,5 +217,65 @@ resource "aws_instance" "web" {
 
   tags = {
     Name = "FrontendEC2"
+  }
+}
+
+# Create the EC2 instance for backend services
+resource "aws_instance" "backend" {
+  ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.private_subnet.id
+  vpc_security_group_ids = [aws_security_group.backend_sg.id]
+  key_name               = "aws_backend_ec2_keypair"
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg
+              sudo install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo chmod a+r /etc/apt/keyrings/docker.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+
+              sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              sudo groupadd docker
+              sudo usermod -a -G docker ubuntu
+              sudo newgrp docker
+              su ubuntu
+              EOF
+
+  tags = {
+    Name = "BackendEC2"
+  }
+}
+
+# Create the EC2 instance for frontend services
+resource "aws_instance" "db" {
+  ami                    = "ami-07652eda1fbad7432" # Ubuntu AMI for eu-central-1 region
+  instance_type          = "t2.micro"
+  subnet_id              = aws_subnet.private_subnet.id
+  vpc_security_group_ids = [aws_security_group.db_sg.id]
+  key_name               = "aws_db_ec2_keypair"
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg
+              sudo install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo chmod a+r /etc/apt/keyrings/docker.gpg
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update
+
+              sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              sudo groupadd docker
+              sudo usermod -a -G docker ubuntu
+              sudo newgrp docker
+              su ubuntu
+              EOF
+
+  tags = {
+    Name = "DatabaseEC2"
   }
 }
